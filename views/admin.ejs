@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header>
+    <h1>Admin Dashboard</h1>
+    <nav><a href="/">View Site</a><a href="/logout">Logout</a></nav>
+</header>
+
+<div class="container">
+    <h2>Add New Vehicle</h2>
+    <form method="POST" action="/admin/vehicles" class="admin-form">
+        <input type="text" name="brand" placeholder="Brand (e.g. Toyota)" required>
+        <input type="text" name="model" placeholder="Model (e.g. Premio)" required>
+        <select name="category" required>
+            <option value="Sedan">Sedan</option>
+            <option value="SUV">SUV</option>
+            <option value="Microbus">Microbus</option>
+        </select>
+        <input type="number" name="dailyRate" placeholder="Daily Rate (BDT)" required>
+        <input type="url" name="imageUrl" placeholder="Image URL (optional)">
+        <button type="submit" class="btn">Add Vehicle</button>
+    </form>
+
+    <h2>Customer Booking Requests (Approval)</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Vehicle</th>
+                    <th>Dates (Days)</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Decision</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% bookings.forEach(b => { %>
+                <tr>
+                    <td><%= b.user ? b.user.fullName : 'Unknown' %></td>
+                    <td><%= b.vehicle ? b.vehicle.brand + ' ' + b.vehicle.model : 'Removed' %></td>
+                    <td><%= b.startDate.toISOString().split('T')[0] %> to <%= b.endDate.toISOString().split('T')[0] %> (<%= b.totalDays %>d)</td>
+                    <td>BDT <%= b.totalPrice.toLocaleString() %></td>
+                    <td><strong><%= b.status.toUpperCase() %></strong></td>
+                    <td>
+                        <% if (b.status === 'pending') { %>
+                            <form method="POST" action="/admin/bookings/<%= b._id %>/status" style="display:inline;">
+                                <input type="hidden" name="status" value="approved">
+                                <button type="submit" class="btn btn-success">Approve</button>
+                            </form>
+                            <form method="POST" action="/admin/bookings/<%= b._id %>/status" style="display:inline;">
+                                <input type="hidden" name="status" value="rejected">
+                                <button type="submit" class="btn btn-danger">Reject</button>
+                            </form>
+                        <% } else { %> - <% } %>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Manage Vehicle Fleet</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Car</th>
+                    <th>Category</th>
+                    <th>Rate/Day</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% vehicles.forEach(v => { %>
+                <tr>
+                    <td><%= v.brand %> <%= v.model %></td>
+                    <td><%= v.category %></td>
+                    <td>BDT <%= v.dailyRate.toLocaleString() %></td>
+                    <td><%= v.status.toUpperCase() %></td>
+                    <td>
+                        <form method="POST" action="/admin/vehicles/<%= v._id %>/toggle" style="display:inline;">
+                            <button type="submit" class="btn btn-warn">Toggle Status</button>
+                        </form>
+                        <form method="POST" action="/admin/vehicles/<%= v._id %>/delete" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header>
+    <h1>DriveEase Car Rentals</h1>
+    <nav><a href="/">Fleet</a><a href="/logout">Logout</a></nav>
+</header>
+<div class="container">
+    <h2>My Booking History</h2>
+    <% if (booked) { %><div class="alert alert-success">Booking submitted! Waiting for admin approval.</div><% } %>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Vehicle</th>
+                    <th>Dates</th>
+                    <th>Days</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% bookings.forEach(b => { %>
+                <tr>
+                    <td><%= b.vehicle ? b.vehicle.brand + ' ' + b.vehicle.model : 'Removed Car' %></td>
+                    <td><%= b.startDate.toISOString().split('T')[0] %> to <%= b.endDate.toISOString().split('T')[0] %></td>
+                    <td><%= b.totalDays %></td>
+                    <td>BDT <%= b.totalPrice.toLocaleString() %></td>
+                    <td><strong><%= b.status.toUpperCase() %></strong></td>
+                    <td>
+                        <% if (b.status === 'pending') { %>
+                            <form method="POST" action="/bookings/<%= b._id %>/cancel">
+                                <button type="submit" class="btn btn-danger">Cancel</button>
+                            </form>
+                        <% } else { %> - <% } %>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveEase - Car Rental</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header>
+    <h1>DriveEase Car Rentals</h1>
+    <nav>
+        <a href="/">Fleet</a>
+        <% if (currentUser) { %>
+            <% if (currentUser.role === 'admin') { %>
+                <a href="/admin">Admin Panel</a>
+            <% } else { %>
+                <a href="/my-bookings">My Bookings</a>
+            <% } %>
+            <a href="/logout">Logout (<%= currentUser.fullName %>)</a>
+        <% } else { %>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        <% } %>
+    </nav>
+</header>
+
+<div class="container">
+    <h2>Available Vehicle Fleet</h2>
+    <form method="GET" style="margin-top: 1rem; display: flex; gap: 0.5rem; max-width: 320px;">
+        <select name="category" style="padding: 0.5rem; flex: 1;">
+            <option value="">All Categories</option>
+            <option value="Sedan" <%= selectedCategory === 'Sedan' ? 'selected' : '' %>>Sedan</option>
+            <option value="SUV" <%= selectedCategory === 'SUV' ? 'selected' : '' %>>SUV</option>
+            <option value="Microbus" <%= selectedCategory === 'Microbus' ? 'selected' : '' %>>Microbus</option>
+        </select>
+        <button type="submit" class="btn">Filter</button>
+    </form>
+
+    <div class="fleet-grid">
+        <% vehicles.forEach(car => { %>
+            <div class="card">
+                <img src="<%= car.imageUrl %>" alt="<%= car.model %>">
+                <div class="card-body">
+                    <div>
+                        <span class="badge"><%= car.category %></span>
+                        <h3><%= car.brand %> <%= car.model %></h3>
+                        <p class="price">BDT <%= car.dailyRate.toLocaleString() %> / day</p>
+                    </div>
+                    <a href="/book/<%= car._id %>" class="btn">Book Now</a>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+</body>
+</html>

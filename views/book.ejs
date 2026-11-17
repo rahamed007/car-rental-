@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Vehicle</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header>
+    <h1>DriveEase Car Rentals</h1>
+    <nav><a href="/">Fleet</a><a href="/my-bookings">My Bookings</a></nav>
+</header>
+<div class="form-box">
+    <h2>Book: <%= vehicle.brand %> <%= vehicle.model %></h2>
+    <p class="price">Daily Rate: BDT <span id="rate"><%= vehicle.dailyRate %></span></p>
+    <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+    <form method="POST">
+        <div class="form-group">
+            <label>Pickup Date</label>
+            <input type="date" name="startDate" id="start" min="<%= new Date().toISOString().split('T')[0] %>" required onchange="calc()">
+        </div>
+        <div class="form-group">
+            <label>Return Date</label>
+            <input type="date" name="endDate" id="end" min="<%= new Date().toISOString().split('T')[0] %>" required onchange="calc()">
+        </div>
+        <p style="margin-bottom:1rem; font-weight:bold;">Total Price: BDT <span id="total">0</span></p>
+        <button type="submit" class="btn" style="width:100%">Confirm Booking</button>
+    </form>
+</div>
+<script>
+function calc() {
+    const s = document.getElementById('start').value;
+    const e = document.getElementById('end').value;
+    const r = Number(document.getElementById('rate').innerText);
+    if (s && e && e >= s) {
+        const days = Math.round((new Date(e) - new Date(s)) / 86400000) + 1;
+        document.getElementById('total').innerText = (days * r).toLocaleString();
+    } else {
+        document.getElementById('total').innerText = '0';
+    }
+}
+</script>
+</body>
+</html>
